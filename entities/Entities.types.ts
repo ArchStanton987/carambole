@@ -3,6 +3,7 @@ import { WallEntity } from "entities/Wall/Wall"
 
 export type GameEntities = {
   isFiring: boolean
+  ballPosition: { x: number; y: number }
   ball1: BallEntity
   ball2: BallEntity
   ball3: BallEntity

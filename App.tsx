@@ -91,6 +91,7 @@ function Game() {
         entities={{
           isFiring: false,
           windowDimensions: { height, width },
+          ballPosition: { x: initBallX, y: ball1Y },
           physics: { engine, world, drag, elastic },
           ball1: {
             body: ball1,
