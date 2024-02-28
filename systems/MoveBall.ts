@@ -20,7 +20,7 @@ const MoveBall = (entities: GameEntities, { touches }: GameEngineUpdateEventOpti
     })
 
     // only basic "ball" can be moved
-    if (ballId && ballId === "ball1") {
+    if (ballId && ballId === "ball1" && !isFiring) {
       drag.pointA = { x: startPos[0], y: startPos[1] }
       drag.pointB = { x: 0, y: 0 }
       drag.bodyB = entities[ballId].body

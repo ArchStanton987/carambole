@@ -87,7 +87,6 @@ function Game() {
         style={styles.gameContainer}
         running={isRunning}
         systems={[Physics, MoveBall, ReleaseBall, ResetBall]}
-        // systems={[Physics, MoveBall, ReleaseBall]}
         entities={{
           isFiring: false,
           windowDimensions: { height, width },
