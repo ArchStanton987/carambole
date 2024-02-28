@@ -1,0 +1,24 @@
+[
+  {
+    "delta": {
+      "locationX": 5,
+      "locationY": 3.6666259765625,
+      "pageX": 18,
+      "pageY": 13,
+      "timestamp": 23.867651998996735
+    },
+    "event": {
+      "changedTouches": ["Array"],
+      "identifier": 1,
+      "locationX": 73.33332824707031,
+      "locationY": 53.999969482421875,
+      "pageX": 267.3333282470703,
+      "pageY": 735.6666564941406,
+      "target": 25,
+      "timestamp": 274274695.104215,
+      "touches": ["Array"]
+    },
+    "id": 1,
+    "type": "move"
+  }
+]
