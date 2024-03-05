@@ -5,7 +5,11 @@ import { AimSightType } from "./AimSight/AimSight"
 
 export type GameEntities = {
   state: "idle" | "aiming" | "released" | "running"
-  onShotEnd: () => void
+  scoreActions: {
+    resetCollisions: () => void
+    incrementShots: () => void
+    reset: () => void
+  }
   aimSight: AimSightType
   ballPosition: { x: number; y: number }
   ball1: BallEntity

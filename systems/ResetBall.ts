@@ -13,7 +13,7 @@ const ResetBall = (e: GameEntities) => {
     e.physics.elastic.pointA = { x, y }
     e.physics.elastic.bodyB = e.ball1.body
     e.state = "idle"
-    e.onShotEnd()
+    e.scoreActions.resetCollisions()
   }
   return e
 }

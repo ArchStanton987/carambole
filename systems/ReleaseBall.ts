@@ -9,6 +9,7 @@ const ReleaseBall = (e: GameEntities) => {
     if (hasX && hasY) {
       e.physics.elastic.bodyB = null
       e.state = "running"
+      e.scoreActions.incrementShots()
     }
   }
   return e
