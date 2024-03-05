@@ -6,6 +6,8 @@ import { AimSightType } from "./AimSight/AimSight"
 export type GameEntities = {
   isFiring: boolean
   state: "idle" | "aiming" | "running"
+  score: number
+  onShotEnd: () => void
   aimSight: AimSightType
   ballPosition: { x: number; y: number }
   ball1: BallEntity

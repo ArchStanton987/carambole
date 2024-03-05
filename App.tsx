@@ -1,5 +1,5 @@
-import { useRef, useState } from "react"
-import { useWindowDimensions } from "react-native"
+import { useReducer, useRef, useState } from "react"
+import { Text, useWindowDimensions } from "react-native"
 
 import consts from "consts"
 import AimSight from "entities/AimSight/AimSight"
@@ -30,9 +30,50 @@ const getBallOptions = (ballIndex: number): Matter.IBodyDefinition => ({
   label: `ball-${ballIndex}`
 })
 
+type CollidedBallId = "ball-2" | "ball-3"
+
+type StateType = {
+  score: number
+  collidedBallsIds: CollidedBallId[]
+  shots: number
+}
+const ballsToCollideNb = 2
+const initState = { score: 0, shots: 0, collidedBallsIds: [] }
+type ActionType =
+  | { type: "ON_COLLISION"; payload: { collidedBallId: CollidedBallId } }
+  | { type: "ON_END_SHOT" }
+  | { type: "ON_RESET" }
+const reducer = (state: StateType, action: ActionType): StateType => {
+  switch (action.type) {
+    case "ON_COLLISION": {
+      const { collidedBallId } = action.payload
+      // if ball already collided, do nothing
+      const hasCollided = state.collidedBallsIds.includes(collidedBallId)
+      if (hasCollided) return state
+      // if not, check if we have enough collided balls to increase score
+      const collidedBallsIds = [...state.collidedBallsIds, collidedBallId]
+      if (collidedBallsIds.length < ballsToCollideNb) {
+        return { ...state, collidedBallsIds }
+      }
+      // if yes, increase score and reset collided balls
+      return { ...state, score: state.score + 1, collidedBallsIds: [] }
+    }
+    case "ON_END_SHOT": {
+      return { ...state, shots: state.shots + 1, collidedBallsIds: [] }
+    }
+    case "ON_RESET": {
+      return { score: 0, shots: 0, collidedBallsIds: [] }
+    }
+    default:
+      throw new Error("Invalid action type")
+  }
+}
+
 function Game() {
   const gameRef = useRef(null)
   const [isRunning, setIsRunning] = useState(false)
+
+  const [scoreState, dispatch] = useReducer(reducer, initState)
 
   const dimensions = useWindowDimensions()
   const insets = useSafeAreaInsets()
@@ -76,6 +117,18 @@ function Game() {
   Matter.World.addConstraint(world, drag)
   Matter.World.addConstraint(world, elastic)
 
+  Matter.Events.on(engine, "collisionStart", event => {
+    const bodyALabel = event.pairs[0].bodyA.label
+    const bodyBLabel = event.pairs[0].bodyB.label
+    const includesBall1 = [bodyALabel, bodyBLabel].includes("ball-1")
+    const includesWall = [bodyALabel, bodyBLabel].some(label => label.includes("wall"))
+    if (!includesBall1 || includesWall) return
+    const collidedBallId = [bodyALabel, bodyBLabel].find(
+      label => label !== "ball-1"
+    ) as CollidedBallId
+    dispatch({ type: "ON_COLLISION", payload: { collidedBallId } })
+  })
+
   // PREVENTS BALLS TO STICK TO THE BALL ON LOW SPEED COLLISION
   // @ts-ignore
   // eslint-disable-next-line no-underscore-dangle
@@ -91,6 +144,8 @@ function Game() {
         entities={{
           isFiring: false,
           state: "idle",
+          onShotEnd: () => dispatch({ type: "ON_END_SHOT" }),
+          score: 0,
           windowDimensions: { height, width },
           ballPosition: { x: initBallX, y: ball1Y },
           physics: { engine, world, drag, elastic },
@@ -144,6 +199,8 @@ function Game() {
           }
         }}
       />
+      <Text style={styles.score}>score:{scoreState.score}</Text>
+      <Text style={styles.shots}>shots:{scoreState.shots}</Text>
       {!isRunning && <Start />}
       {!isRunning && <PressableFullScreen onPress={() => setIsRunning(true)} />}
     </>
