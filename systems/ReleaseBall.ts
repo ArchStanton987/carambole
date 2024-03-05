@@ -1,20 +1,17 @@
 import { GameEntities } from "entities/Entities.types"
 
-const ReleaseBall = (entities: GameEntities) => {
-  const { isFiring, ball1, ballPosition, physics } = entities
-  const { elastic } = physics
-  const { position } = ball1.body
+const ReleaseBall = (e: GameEntities) => {
+  const hasElastic = e.physics.elastic.bodyB !== null
 
-  const hasElastic = elastic.bodyB !== null
-
-  if (isFiring && hasElastic) {
-    const hasX = Math.abs(position.x - ballPosition.x) <= 10
-    const hasY = Math.abs(position.y - ballPosition.y) <= 10
+  if (e.state === "released" && hasElastic) {
+    const hasX = Math.abs(e.ball1.body.position.x - e.ballPosition.x) <= 10
+    const hasY = Math.abs(e.ball1.body.position.y - e.ballPosition.y) <= 10
     if (hasX && hasY) {
-      elastic.bodyB = null
+      e.physics.elastic.bodyB = null
+      e.state = "running"
     }
   }
-  return entities
+  return e
 }
 
 export default ReleaseBall

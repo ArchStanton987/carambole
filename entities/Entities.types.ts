@@ -4,9 +4,7 @@ import { WallEntity } from "entities/Wall/Wall"
 import { AimSightType } from "./AimSight/AimSight"
 
 export type GameEntities = {
-  isFiring: boolean
-  state: "idle" | "aiming" | "running"
-  score: number
+  state: "idle" | "aiming" | "released" | "running"
   onShotEnd: () => void
   aimSight: AimSightType
   ballPosition: { x: number; y: number }

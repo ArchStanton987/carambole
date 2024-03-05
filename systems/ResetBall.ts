@@ -1,23 +1,21 @@
 import { GameEntities } from "entities/Entities.types"
 
-const ResetBall = (entities: GameEntities) => {
-  const { ball1, physics, aimSight, onShotEnd, ...rest } = entities
-  let { isFiring, ballPosition } = rest
-  const { elastic } = physics
-  const ballHasStopped = ball1.body.speed < 0.05
-  const hasNoElastic = elastic.bodyB === null
+const ResetBall = (e: GameEntities) => {
+  const ballHasStopped = e.ball1.body.speed < 0.05
+  const hasNoElastic = e.physics.elastic.bodyB === null
+  const isRunning = e.state === "running"
 
-  if (isFiring && ballHasStopped && hasNoElastic) {
-    const { x, y } = ball1.body.position
-    ballPosition = { x, y }
-    aimSight.pointA = { x, y }
+  if (isRunning && ballHasStopped && hasNoElastic) {
+    const { x, y } = e.ball1.body.position
+    e.ballPosition = { x, y }
+    e.aimSight.pointA = { x, y }
 
-    elastic.pointA = { x, y }
-    elastic.bodyB = ball1.body
-    isFiring = false
-    onShotEnd()
+    e.physics.elastic.pointA = { x, y }
+    e.physics.elastic.bodyB = e.ball1.body
+    e.state = "idle"
+    e.onShotEnd()
   }
-  return { ...entities, ballPosition, aimSight, isFiring, physics: { ...physics, elastic } }
+  return e
 }
 
 export default ResetBall

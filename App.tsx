@@ -142,7 +142,6 @@ function Game() {
         running={isRunning}
         systems={[Physics, MoveBall, ReleaseBall, ResetBall]}
         entities={{
-          isFiring: false,
           state: "idle",
           onShotEnd: () => dispatch({ type: "ON_END_SHOT" }),
           score: 0,

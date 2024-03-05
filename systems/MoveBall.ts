@@ -2,30 +2,28 @@ import { GameEntities } from "entities/Entities.types"
 import { GameEngineUpdateEventOptionType } from "react-native-game-engine"
 import { Point, getDistance } from "utils"
 
-const MoveBall = (entities: GameEntities, { touches }: GameEngineUpdateEventOptionType) => {
-  const { physics, ball1, aimSight, ...rest } = entities
-  let { isFiring } = rest
-  const { drag } = physics
-
+const MoveBall = (e: GameEntities, { touches }: GameEngineUpdateEventOptionType) => {
   // Handle start touch
   const start = touches.find(x => x.type === "start")
 
-  if (start) {
+  if (start && e.state === "idle") {
     const startPos: Point = [start.event.pageX, start.event.pageY]
 
-    const ballId = Object.keys(entities).find(key => {
-      const body = entities[key as keyof GameEntities]?.body ?? false
+    const ballId = Object.keys(e).find(key => {
+      const body = e[key as keyof GameEntities]?.body ?? false
 
       return body && getDistance([body.position.x, body.position.y], startPos) < 25
     })
 
-    // only basic "ball" can be moved
-    if (ballId && ballId === "ball1" && !isFiring) {
-      drag.pointA = { x: startPos[0], y: startPos[1] }
-      drag.pointB = { x: 0, y: 0 }
-      drag.bodyB = entities[ballId].body
+    // only the playable ball ("ball1") can be moved
+    if (ballId && ballId === "ball1") {
+      e.physics.drag.pointA = { x: startPos[0], y: startPos[1] }
+      e.physics.drag.pointB = { x: 0, y: 0 }
+      e.physics.drag.bodyB = e[ballId].body
       // REFACTOR: DOES NOT EXISTS ???
-      drag.angleB = entities[ballId].body.angle
+      e.physics.drag.angleB = e[ballId].body.angle
+      e.aimSight.isVisible = true
+      e.state = "aiming"
     }
   }
 
@@ -33,25 +31,24 @@ const MoveBall = (entities: GameEntities, { touches }: GameEngineUpdateEventOpti
   const move = touches.find(x => x.type === "move")
 
   if (move) {
-    drag.pointA = { x: move.event.pageX, y: move.event.pageY }
-    aimSight.isVisible = true
-    aimSight.pointB = ball1.body.position
+    e.physics.drag.pointA = { x: move.event.pageX, y: move.event.pageY }
+    e.aimSight.pointB = e.ball1.body.position
   }
 
   // Handle end touch
   const end = touches.find(x => x.type === "end")
 
   if (end) {
-    isFiring = true
+    e.state = "released"
 
-    drag.pointA = { x: 0, y: 0 }
-    drag.pointB = { x: 0, y: 0 }
-    drag.bodyB = null
+    e.physics.drag.pointA = { x: 0, y: 0 }
+    e.physics.drag.pointB = { x: 0, y: 0 }
+    e.physics.drag.bodyB = null
 
-    aimSight.isVisible = false
+    e.aimSight.isVisible = false
   }
 
-  return { ...entities, isFiring }
+  return e
 }
 
 export default MoveBall
