@@ -1,11 +1,4 @@
 todo:
-- layout (safe area, instrutions, pub)
-- ray tracing
-- scores
-- règles : début / fin ?
-- supprimer repositionnement ?
-- github
-
-ideas
-- grouper boules de même couleur, qui vont avoir tendance à "coller" les unes aux autres
-- des boules de couleurs différentes pouvent rebondir plus fort
+- layout (safe area, wall positions)
+- scores (shots icon, score icon)
+- shot with a cue, not a slingshot
