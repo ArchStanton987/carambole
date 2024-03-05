@@ -1,8 +1,12 @@
 import { BallEntity } from "entities/Ball/Ball"
 import { WallEntity } from "entities/Wall/Wall"
 
+import { AimSightType } from "./AimSight/AimSight"
+
 export type GameEntities = {
   isFiring: boolean
+  state: "idle" | "aiming" | "running"
+  aimSight: AimSightType
   ballPosition: { x: number; y: number }
   ball1: BallEntity
   ball2: BallEntity

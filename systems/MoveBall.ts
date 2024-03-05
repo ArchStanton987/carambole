@@ -3,7 +3,7 @@ import { GameEngineUpdateEventOptionType } from "react-native-game-engine"
 import { Point, getDistance } from "utils"
 
 const MoveBall = (entities: GameEntities, { touches }: GameEngineUpdateEventOptionType) => {
-  const { physics, ...rest } = entities
+  const { physics, ball1, aimSight, ...rest } = entities
   let { isFiring } = rest
   const { drag } = physics
 
@@ -34,6 +34,8 @@ const MoveBall = (entities: GameEntities, { touches }: GameEngineUpdateEventOpti
 
   if (move) {
     drag.pointA = { x: move.event.pageX, y: move.event.pageY }
+    aimSight.isVisible = true
+    aimSight.pointB = ball1.body.position
   }
 
   // Handle end touch
@@ -45,6 +47,8 @@ const MoveBall = (entities: GameEntities, { touches }: GameEngineUpdateEventOpti
     drag.pointA = { x: 0, y: 0 }
     drag.pointB = { x: 0, y: 0 }
     drag.bodyB = null
+
+    aimSight.isVisible = false
   }
 
   return { ...entities, isFiring }

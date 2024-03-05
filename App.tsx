@@ -2,6 +2,7 @@ import { useRef, useState } from "react"
 import { useWindowDimensions } from "react-native"
 
 import consts from "consts"
+import AimSight from "entities/AimSight/AimSight"
 import Ball from "entities/Ball/Ball"
 import Wall from "entities/Wall/Wall"
 import { wallBottom, wallLeft, wallRight, wallTop } from "entities/Wall/walls-options"
@@ -89,9 +90,16 @@ function Game() {
         systems={[Physics, MoveBall, ReleaseBall, ResetBall]}
         entities={{
           isFiring: false,
+          state: "idle",
           windowDimensions: { height, width },
           ballPosition: { x: initBallX, y: ball1Y },
           physics: { engine, world, drag, elastic },
+          aimSight: {
+            pointA: { x: initBallX, y: ball1Y },
+            pointB: { x: initBallX, y: ball1Y },
+            isVisible: false,
+            renderer: AimSight
+          },
           ball1: {
             body: ball1,
             size: [consts.BALL_SIZE, consts.BALL_SIZE],
