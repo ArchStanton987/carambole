@@ -1,15 +1,15 @@
-import { useReducer, useRef, useState } from "react"
-import { Text, useWindowDimensions } from "react-native"
+import { useMemo, useReducer, useRef, useState } from "react"
+import { Text, View, useWindowDimensions } from "react-native"
 
 import consts from "consts"
 import AimSight from "entities/AimSight/AimSight"
 import Ball from "entities/Ball/Ball"
 import { getBallOptions, handleCollision } from "entities/Ball/ball-utils"
 import Wall from "entities/Wall/Wall"
-import { wallBottom, wallLeft, wallRight, wallTop } from "entities/Wall/walls-options"
+import getWalls from "entities/Wall/walls-options"
 import Matter from "matter-js"
 import { GameEngine } from "react-native-game-engine"
-import { SafeAreaProvider, SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
+import { SafeAreaProvider, useSafeAreaInsets } from "react-native-safe-area-context"
 import gameReducer from "reducers/game-reducer"
 import MoveBall from "systems/MoveBall"
 import Physics from "systems/Physics"
@@ -19,7 +19,7 @@ import ResetBall from "systems/ResetBall"
 import PressableFullScreen from "components/PressableFullScreen/PressableFullScreen"
 import Start from "components/Start/Start"
 
-import styles from "./App.styles"
+import createStyles from "./App.styles"
 
 const initState = { score: 0, shots: 0, collidedBallsIds: [] }
 
@@ -33,12 +33,14 @@ function Game() {
   const height = dimensions.height - insets.top - insets.bottom
   const width = dimensions.width - insets.left - insets.right
 
+  const styles = useMemo(() => createStyles(insets), [insets])
+
   const engine = Matter.Engine.create({ enableSleeping: false })
   const { world } = engine
   engine.gravity.y = 0
 
   const initBallX = width / 2
-  const initBall1Y = height - height * 0.1
+  const initBall1Y = height - insets.top - height * 0.2
   const anchor = { x: initBallX, y: initBall1Y }
 
   const ball1 = Matter.Bodies.circle(initBallX, initBall1Y, consts.BALL_SIZE / 2, getBallOptions(1))
@@ -61,6 +63,8 @@ function Game() {
     stiffness: 0.05
   })
 
+  const { wallLeft, wallTop, wallRight, wallBottom } = getWalls(insets, dimensions)
+
   Matter.World.add(world, [ball1, ball2, ball3, wallLeft, wallTop, wallRight, wallBottom])
   Matter.World.addConstraint(world, drag)
   Matter.World.addConstraint(world, elastic)
@@ -73,7 +77,7 @@ function Game() {
   Matter.Resolver._restingThresh = 0.001
 
   return (
-    <>
+    <View style={styles.container}>
       <GameEngine
         ref={gameRef}
         style={styles.gameContainer}
@@ -116,25 +120,25 @@ function Game() {
           },
           wallLeft: {
             body: wallLeft,
-            size: [consts.WALL_WIDTH, dimensions.height],
+            size: [consts.WALL_WIDTH, dimensions.height * 2],
             color: "darkgreen",
             renderer: Wall
           },
           wallRight: {
             body: wallRight,
-            size: [consts.WALL_WIDTH, dimensions.height],
+            size: [consts.WALL_WIDTH, dimensions.height * 2],
             color: "darkgreen",
             renderer: Wall
           },
           wallTop: {
             body: wallTop,
-            size: [height, consts.WALL_WIDTH],
+            size: [dimensions.width * 2, consts.WALL_WIDTH],
             color: "darkgreen",
             renderer: Wall
           },
           wallBottom: {
             body: wallBottom,
-            size: [height, consts.WALL_WIDTH],
+            size: [dimensions.width * 2, consts.WALL_WIDTH],
             color: "darkgreen",
             renderer: Wall
           }
@@ -144,16 +148,14 @@ function Game() {
       <Text style={styles.shots}>shots:{scoreState.shots}</Text>
       {!isRunning && <Start />}
       {!isRunning && <PressableFullScreen onPress={() => setIsRunning(true)} />}
-    </>
+    </View>
   )
 }
 
 export default function App() {
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={styles.container}>
-        <Game />
-      </SafeAreaView>
+      <Game />
     </SafeAreaProvider>
   )
 }
