@@ -40,7 +40,7 @@ function Game() {
   engine.gravity.y = 0
 
   const initBallX = width / 2
-  const initBall1Y = height - insets.top - height * 0.2
+  const initBall1Y = insets.top + 0.8 * height
   const anchor = { x: initBallX, y: initBall1Y }
 
   const ball1 = Matter.Bodies.circle(initBallX, initBall1Y, consts.BALL_SIZE / 2, getBallOptions(1))

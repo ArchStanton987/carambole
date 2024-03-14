@@ -15,6 +15,10 @@ type Dimensions = {
 
 const wallVisibleWidth = 10
 const scoreHeight = 12
+const collisionFilter = {
+  category: consts.collisionFilters.default,
+  mask: consts.collisionFilters.default
+}
 
 const getWalls = (insets: Insets, dimensions: Dimensions) => {
   const width = dimensions.width - insets.left - insets.right
@@ -23,14 +27,14 @@ const getWalls = (insets: Insets, dimensions: Dimensions) => {
     0,
     consts.WALL_WIDTH,
     dimensions.height * 2,
-    { isStatic: true, label: "wallLeft" }
+    { collisionFilter, isStatic: true, label: "wallLeft" }
   )
   const wallRight = Matter.Bodies.rectangle(
     width + consts.WALL_WIDTH / 2 - wallVisibleWidth,
     0,
     consts.WALL_WIDTH,
     dimensions.height * 2,
-    { isStatic: true, label: "wallRight" }
+    { collisionFilter, isStatic: true, label: "wallRight" }
   )
 
   const wallTop = Matter.Bodies.rectangle(
@@ -38,7 +42,7 @@ const getWalls = (insets: Insets, dimensions: Dimensions) => {
     -consts.WALL_WIDTH / 2 + wallVisibleWidth + insets.top + scoreHeight,
     dimensions.width * 2,
     consts.WALL_WIDTH,
-    { isStatic: true, label: "wallTop" }
+    { collisionFilter, isStatic: true, label: "wallTop" }
   )
 
   const wallBottom = Matter.Bodies.rectangle(
@@ -46,7 +50,7 @@ const getWalls = (insets: Insets, dimensions: Dimensions) => {
     dimensions.height + consts.WALL_WIDTH / 2 - wallVisibleWidth - insets.bottom,
     dimensions.width * 2,
     consts.WALL_WIDTH,
-    { isStatic: true, label: "wallBottom" }
+    { collisionFilter, isStatic: true, label: "wallBottom" }
   )
 
   return { wallLeft, wallRight, wallTop, wallBottom }

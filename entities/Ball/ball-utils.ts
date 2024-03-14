@@ -1,3 +1,5 @@
+/* eslint-disable no-bitwise */
+import consts from "consts"
 import Matter from "matter-js"
 import { CollidedBallId, GameReducerAction } from "reducers/game-reducer.types"
 
@@ -9,7 +11,13 @@ export const getBallOptions = (ballIndex: number): Matter.IBodyDefinition => ({
   frictionAir: 0.015, // no air resistance
   frictionStatic: 0, // never stop moving
   // collisionFilter: { group: -1 },
-  label: `ball-${ballIndex}`
+  label: `ball-${ballIndex}`,
+  collisionFilter: {
+    mask:
+      ballIndex === 1
+        ? consts.collisionFilters.cue | consts.collisionFilters.default
+        : consts.collisionFilters.default
+  }
 })
 
 export const handleCollision = (
