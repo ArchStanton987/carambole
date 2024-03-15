@@ -5,8 +5,8 @@ export const getCueOptions = (): Matter.IBodyDefinition => ({
   isStatic: false,
   restitution: 1,
   inertia: Infinity,
-  friction: 0,
-  frictionAir: 0,
+  friction: 1,
+  frictionAir: 1,
   frictionStatic: 0,
   label: "cue",
   collisionFilter: { category: consts.collisionFilters.cue }

@@ -5,16 +5,16 @@ import consts from "consts"
 import AimSight from "entities/AimSight/AimSight"
 import Ball from "entities/Ball/Ball"
 import { getBallOptions, handleCollision } from "entities/Ball/ball-utils"
+import Cue from "entities/Cue/Cue"
+import { getCueOptions } from "entities/Cue/cue-utils"
 import Wall from "entities/Wall/Wall"
 import getWalls from "entities/Wall/walls-options"
 import Matter from "matter-js"
 import { GameEngine } from "react-native-game-engine"
 import { SafeAreaProvider, useSafeAreaInsets } from "react-native-safe-area-context"
 import gameReducer from "reducers/game-reducer"
-import MoveBall from "systems/MoveBall"
+import MoveCue from "systems/MoveCue"
 import Physics from "systems/Physics"
-import ReleaseBall from "systems/ReleaseBall"
-import ResetBall from "systems/ResetBall"
 
 import PressableFullScreen from "components/PressableFullScreen/PressableFullScreen"
 import Start from "components/Start/Start"
@@ -43,6 +43,8 @@ function Game() {
   const initBall1Y = insets.top + 0.8 * height
   const anchor = { x: initBallX, y: initBall1Y }
 
+  const cue = Matter.Bodies.rectangle(50, 300, consts.CUE_WIDTH, consts.CUE_HEIGHT, getCueOptions())
+
   const ball1 = Matter.Bodies.circle(initBallX, initBall1Y, consts.BALL_SIZE / 2, getBallOptions(1))
   const ball2 = Matter.Bodies.circle(initBallX, 200, consts.BALL_SIZE / 2, getBallOptions(2))
   const ball3 = Matter.Bodies.circle(initBallX, 300, consts.BALL_SIZE / 2, getBallOptions(3))
@@ -51,8 +53,8 @@ function Game() {
     label: "drag",
     pointA: { x: 0, y: 0 },
     pointB: { x: 0, y: 0 },
-    length: 0.01,
-    stiffness: 0.05
+    damping: 0,
+    stiffness: 1
   })
 
   const elastic = Matter.Constraint.create({
@@ -65,7 +67,7 @@ function Game() {
 
   const { wallLeft, wallTop, wallRight, wallBottom } = getWalls(insets, dimensions)
 
-  Matter.World.add(world, [ball1, ball2, ball3, wallLeft, wallTop, wallRight, wallBottom])
+  Matter.World.add(world, [cue, ball1, ball2, ball3, wallLeft, wallTop, wallRight, wallBottom])
   Matter.World.addConstraint(world, drag)
   Matter.World.addConstraint(world, elastic)
 
@@ -82,7 +84,7 @@ function Game() {
         ref={gameRef}
         style={styles.gameContainer}
         running={isRunning}
-        systems={[Physics, MoveBall, ReleaseBall, ResetBall]}
+        systems={[Physics, MoveCue]}
         entities={{
           state: "idle",
           scoreActions: {
@@ -99,6 +101,13 @@ function Game() {
             pointB: { x: initBallX, y: initBall1Y },
             isVisible: false,
             renderer: AimSight
+          },
+          cue: {
+            body: cue,
+            size: [consts.CUE_WIDTH, consts.CUE_HEIGHT],
+            color: "blanchedalmond",
+            ball: ball1,
+            renderer: Cue
           },
           ball1: {
             body: ball1,

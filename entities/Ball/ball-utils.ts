@@ -10,7 +10,6 @@ export const getBallOptions = (ballIndex: number): Matter.IBodyDefinition => ({
   friction: 0, // perfect slide in a collision
   frictionAir: 0.015, // no air resistance
   frictionStatic: 0, // never stop moving
-  // collisionFilter: { group: -1 },
   label: `ball-${ballIndex}`,
   collisionFilter: {
     mask:
